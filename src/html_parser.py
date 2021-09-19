@@ -29,7 +29,7 @@ class Parser:
         if self.pos == len(self.input) - 1:
             return ""
         else:
-            return self.input[self.pos+1]
+            return self.input[self.pos]
 
     def starts_with(self, str):
         """
@@ -37,7 +37,7 @@ class Parser:
         """
 
         # TODO: str == "" case handled
-        return self.input[self.pos:self.pos+len(str)].equals(str)
+        return self.input[self.pos:self.pos+len(str)].__eq__(str)
 
     def has_next(self):
         """
@@ -88,7 +88,7 @@ class Parser:
         """
         Parses through text until a tag opening is found, and returns the value as a text node.
         """
-        text = self.next_while(lambda x: not x.equals('<'))
+        text = self.next_while(lambda x: not x.__eq__('<'))
         return TextNode(text)
 
 
@@ -133,7 +133,7 @@ class Parser:
             """
             def parse_attribute_value(self):
                 assert(self.next() == '"')
-                value = self.next_while(lambda x: not x.equals('"'))
+                value = self.next_while(lambda x: not x.__eq__('"'))
                 assert(self.next() == '"')
                 return value
             name = self.parse_tag()
@@ -142,7 +142,7 @@ class Parser:
             return (name, value)
 
         attr = {}
-        while (not self.next().equals('>')):
+        while (not self.peek().__eq__('>')):
             self.next_whitespace()
             name, value = self.parse_attribute()
             attr[name] = value
