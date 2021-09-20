@@ -17,7 +17,7 @@ class Selector:
     """
     Contains a selector for a tag, with the tag name, id and class name.
     """
-    def __init__(self, tag_name="", id="", classes=[]):
+    def __init__(self, tag_name=None, id=None, classes=[]):
         self.tag_name = tag_name
         self.id = id
         self.classes = classes
@@ -33,17 +33,12 @@ class Declaration:
     """
     Contains a dictionary of properties and their values
     """
-    def __init__(self, name="", value=""):
-        self.values={}
+    def __init__(self, name=None, value=None):
         self.name = name
-        if name:
-            self.values[name] = value
-
-    def add(self, name, value):
-        self.values[name] = value
+        self.value = value
 
     def value(self, name):
-        return self.values[name]
+        return self.value
 
 class Color:
     """

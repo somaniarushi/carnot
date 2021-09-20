@@ -89,7 +89,7 @@ class HTMLParser(Parser):
         return attr
 
 
-def parse(source):
+def parse_html(source):
     """
     Accepts an HTML document as a string, parses it, and returns the populated DOM tree structure.
     """

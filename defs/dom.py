@@ -27,9 +27,14 @@ class ElementNode(Node):
         self.attr = attr
 
     def id(self):
-        return self.attr['id']
+        if 'id' in self.attr:
+            return self.attr['id']
+        else:
+            return None
 
     def classes(self):
+        if 'class' not in self.attr:
+            return []
         return self.attr['class'].split(' ')
 
 class TextNode(Node):

@@ -39,7 +39,7 @@ class CSSParser(Parser):
         """
         Parses one selector. eg: type#id.class1.class2
         """
-        tag, id, classes = "", "", []
+        tag, id, classes = None, None, []
         while self.has_next():
             c = self.peek()
             if c == '#':
@@ -124,7 +124,7 @@ def is_valid_identifier(c):
     """
     return c.isalnum() or c == '-' or c == '_'
 
-def parse(source):
+def parse_css(source):
     """
     Accepts an CSS document as a string, parses it, and returns the populated rules structure.
     """

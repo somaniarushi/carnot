@@ -54,12 +54,19 @@ def specified_values(elem, stylesheet):
     matched_rules.sort(key=lambda x: x.specificity)
     for matched_rule in matched_rules:
         for dec in matched_rule.rule.declarations:
-            values[dec.name] = dec.value()
+            values[dec.name] = dec.value
     return values
 
 def styled_tree(root, stylesheet):
-    spec_values = specified_values(root, stylesheet) if root.node_type == NodeType.ELEMENT else {}
+    """
+    Accepts a root node and a stylesheet and returns the styled node with
+    all its children styled nodes.
+    """
+    spec_values = specified_values(root, stylesheet) \
+                    if root.node_type == NodeType.ELEMENT \
+                    else {}
     children = []
-    for child in root.children:
-        children.append(styled_tree(child, stylesheet))
+    if root.children != None:
+        for child in root.children:
+            children.append(styled_tree(child, stylesheet))
     return StyledNode(root, spec_values, children)
