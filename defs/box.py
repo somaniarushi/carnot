@@ -1,6 +1,5 @@
 from enum import Enum
 
-# FIXME: Refactor into subclasses
 class BoxType(Enum):
     """
     Enumerates all possible types of boxes
@@ -18,25 +17,34 @@ class Box:
         self.type = type
         self.children = children
 
-    def get_inline_container(self):
-        """
-        If the request for inline container is called on a child that is
-        """
-        pass
-
 
 class InlineBox(Box):
     def __init__(self, dimensions=None, children=[]):
         super().__init__(dimensions, BoxType.INLINE_NODE, children)
+
+    def get_inline_container(self):
+        return self
 
 
 class BlockBox(Box):
     def __init__(self, dimensions=None, children=[]):
         super().__init__(dimensions, BoxType.BLOCK_NODE, children)
 
+    def get_inline_container(self):
+        last_box = self.children[-1] if self.children else None
+        if not (last_box and last_box.box_type == BoxType.ANONYMOUS):
+            last_box = AnonBox()
+            self.children.append(last_box)
+        return last_box
+
+
+
 class AnonBox(Box):
-    def __init__(self, dimension=None, children=[]):
+    def __init__(self, dimensions=None, children=[]):
         super().__init__(dimensions, BoxType.ANONYMOUS, children)
+
+    def get_inline_container(self):
+        return self
 
 
 class Dimensions:

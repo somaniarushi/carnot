@@ -1,7 +1,5 @@
 from defs.box import Box, BoxType
 
-
-
 def build_layout_tree(style_node):
     """
     Build the layout tree with displays but without dimensions.
@@ -26,8 +24,6 @@ def build_layout_tree(style_node):
             root.children.append(build_layout_tree(child))
         elif get_box_type(child) == BoxType.INLINE_NODE:
             root.get_inline_container().children.append(build_layout_tree(child))
-        else:
-            continue
 
     return root
 
