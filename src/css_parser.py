@@ -1,5 +1,5 @@
 from parser import Parser
-from css import Rule, Declaration, Selector, Color
+from css import StyleSheet, Rule, Declaration, Selector, Color
 
 class CSSParser(Parser):
     def parse_rules(self):
@@ -7,9 +7,11 @@ class CSSParser(Parser):
         Parse through a series of rules
         """
         rules = []
-        while not self.eof():
+        while self.has_next():
             self.next_whitespace()
             rules.append(self.parse_rule())
+            self.next()
+            self.next_whitespace()
         return rules
 
     def parse_rule(self):
@@ -25,10 +27,11 @@ class CSSParser(Parser):
         Parse a comma separated list of selectors.
         """
         selectors = []
-        while self.has_next() and self.peek() != '}':
+        while self.has_next() and self.peek() != '{':
             selectors.append(self.parse_selector())
             if self.peek() == ',':
                 self.next(); self.next_whitespace()
+            self.next_whitespace()
         selectors.sort(key=lambda x: x.specificity())
         return selectors
 
@@ -38,17 +41,20 @@ class CSSParser(Parser):
         """
         tag, id, classes = "", "", []
         while self.has_next():
-            c = self.next()
+            c = self.peek()
             if c == '#':
+                self.next()
                 id = self.parse_identifier()
             elif c == '.':
+                self.next()
                 classes.append(self.parse_identifier())
             elif c == '*':
+                self.next()
                 continue
-            elif self.is_valid_identifier(c):
+            elif is_valid_identifier(c):
                 tag = self.parse_identifier()
             else:
-                raise EOFError('Found unidentified character')
+                break
 
         return Selector(tag, id, classes)
 
@@ -67,6 +73,7 @@ class CSSParser(Parser):
         while self.has_next() and self.peek() != '}':
             self.next_whitespace()
             declarations.append(self.parse_declaration())
+            self.next_whitespace()
         assert(self.next() == '}')
         return declarations
 
@@ -95,7 +102,7 @@ class CSSParser(Parser):
         elif c == '#':
             return self.parse_color()
         else:
-            return self.parse_identifier().name
+            return self.next_while(lambda x: x != ';')
 
     def parse_color(self):
         """
@@ -116,3 +123,10 @@ def is_valid_identifier(c):
     Returns true if identifier is valid.
     """
     return c.isalnum() or c == '-' or c == '_'
+
+def parse(source):
+    """
+    Accepts an CSS document as a string, parses it, and returns the populated rules structure.
+    """
+    rules = CSSParser(source).parse_rules()
+    return StyleSheet(rules)
