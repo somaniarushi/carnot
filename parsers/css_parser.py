@@ -1,5 +1,5 @@
-from parser import Parser
-from css import StyleSheet, Rule, Declaration, Selector, Color
+from parsers.parser import Parser
+from defs.css import StyleSheet, Rule, Declaration, Selector, Color
 
 class CSSParser(Parser):
     def parse_rules(self):

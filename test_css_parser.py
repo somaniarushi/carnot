@@ -1,4 +1,4 @@
-from css_parser import parse
+from parsers.css_parser import parse
 
 #TODO: Add more tests.
 def main():

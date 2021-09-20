@@ -1,5 +1,5 @@
-from dom import TextNode, ElementNode
-from parser import Parser
+from defs.dom import TextNode, ElementNode
+from parsers.parser import Parser
 
 """
 The parser is supposed to take an HTML file as an input,
