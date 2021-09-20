@@ -59,6 +59,7 @@ class HTMLParser(Parser):
         while not self.eof() and not self.starts_with("</"):
             self.next_whitespace()
             nodes.append(self.parse_node())
+            self.next_whitespace()
         return nodes
 
     def parse_attributes(self):

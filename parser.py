@@ -3,7 +3,7 @@ class Parser:
     Takes a string as an input and the current position in the string.
     """
     def __init__(self, input=""):
-        self.input = input
+        self.input = input.replace("\n", "")
         self.pos = 0
 
 
