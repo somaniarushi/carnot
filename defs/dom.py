@@ -26,6 +26,12 @@ class ElementNode(Node):
         self.tag_name = tag_name
         self.attr = attr
 
+    def id(self):
+        return self.attr['id']
+
+    def classes(self):
+        return self.attr['class'].split(' ')
+
 class TextNode(Node):
     """
     A class that creates a text node of the DOM.
