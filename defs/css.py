@@ -35,11 +35,15 @@ class Declaration:
     """
     def __init__(self, name="", value=""):
         self.values={}
+        self.name = name
         if name:
             self.values[name] = value
 
     def add(self, name, value):
         self.values[name] = value
+
+    def value(self, name):
+        return self.values[name]
 
 class Color:
     """
