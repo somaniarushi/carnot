@@ -28,3 +28,15 @@ class StyledNode:
         else:
             return val
 
+    def lookup(self, name, fallback_name, default):
+        """
+        Return the specified value of property name, or property
+        fallback_name if it doesn't exist, or default if
+        neither exists.
+        """
+        if name in self.style:
+            return self.style[name]
+        elif fallback_name in self.style:
+            return self.style[fallback_name]
+        else:
+            return default

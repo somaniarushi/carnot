@@ -17,7 +17,7 @@ def build_layout_tree(style_node):
             raise Exception("Root node can't have display none")
 
     disp = get_box_type(style_node)
-    root = Box(None, disp, [])
+    root = Box(None, style_node, disp, [])
 
     for child in style_node.children:
         if get_box_type(child) == BoxType.BLOCK_NODE:
