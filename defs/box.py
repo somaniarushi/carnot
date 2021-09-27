@@ -14,6 +14,15 @@ class Dimensions:
         self.content = Rect()
         self.padding, self.border, self.margin = Edge(), Edge(), Edge()
 
+    def padding_box(self):
+        return self.content.expanded_by(self.padding)
+
+    def border_box(self):
+        return self.content.expanded_by(self.border)
+
+    def margin_box(self):
+        return self.content.expanded_by(self.margin)
+
 class Rect:
     """
     Keeps track of the location of a element on the webpage.
@@ -23,6 +32,14 @@ class Rect:
         self.y = y
         self.height = height
         self.width = width
+
+    def expanded_by(self, edge):
+        return Rect(
+                self.x - edge.left,
+                self.y - edge.top,
+                self.width + edge.left + edge.right,
+                self.height + edge.top + edge.bottom
+            )
 
 class Edge:
     """
@@ -86,7 +103,39 @@ class BlockBox(Box):
         """
         Calculate position of self.
         """
+        style = self.get_style_node()
+        d = self.dimensions
 
+        d.margin.top = style.lookup("margin-top", "margin", 0)
+        d.margin.bottom = style.lookup("margin-bottom", "margin", 0)
+
+        d.border.top = style.lookup("border-top-width", "border-width", 0)
+        d.border.bottom = style.lookup("border-bottom-width", "border-width", 0)
+
+        d.padding.top = style.lookup("padding-top", "padding", 0)
+        d.padding.bottom = style.lookup("padding-bottom", "padding", 0)
+
+        d.content.x = container.content.x + d.margin.left + d.border.left + d.padding.left
+        d.content.y = container.content.y + d.margin.top + d.border.top + d.padding.top
+
+
+    def layout_children(self):
+        """
+        Layout the children of self.
+        """
+        d = self.dimensions
+        for child in self.children:
+            child.layout(self)
+            d.content.height += child.dimensions.margin_box().height
+
+
+    def calculate_height(self):
+        """
+        If a manual height has been specified for the box, use it.
+        """
+        style = self.get_style_node()
+        if (style.value('height')):
+            self.dimensions.content.height = style.value('height')
 
     def calculate_width(self, container):
         """
@@ -148,13 +197,7 @@ class BlockBox(Box):
                     Edge(padding_right, padding_left),
                     Edge(border_right, border_left),
                     Edge(margin_right, margin_left)
-                    )
-
-
-
-
-
-
+                )
 
 class InlineBox(Box):
     def __init__(self, style_node=None, dimensions=None, children=[]):
