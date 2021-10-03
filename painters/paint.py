@@ -2,10 +2,26 @@ from defs.box import AnonBox, BlockBox, InlineBox, Box, Rect, BoxType
 from defs.css import Color
 
 class Canvas:
-    def __init__(self, pixels, width, height):
-        self.pixels = pixels
+    def __init__(self, width, height, pixels=[]):
         self.width = width
         self.height = height
+        if pixels:
+            self.pixels = pixels
+        else:
+            white = Color(255, 255, 255, 255)
+            self.pixels = [white for _ in range(self.width * self.height)]
+
+    def paint_item(self, item):
+        x0 = min(item.rect.x, self.width)
+        y0 = min(item.rect.y, self.height)
+
+        x1 = min(item.rect.x + item.rect.width, self.width)
+        y1 = min(item.rect.y + item.rect.height, self.height)
+
+        for y in [y0, y1]:
+            for x in [x0, x1]:
+                self.pixels[y * self.width + x] = item.color
+
 
 class DisplayCommand:
     def __init__(self, color, rect):
@@ -18,6 +34,10 @@ def paint(root, bounds):
     to an array of pixels.
     """
     display = build_display_list(root)
+    canvas = Canvas(bounds.width, bounds.height)
+    for item in display:
+        canvas.paint_item(item)
+    return canvas
 
 def build_display_list(root):
     return render_layout_box(root)
@@ -41,15 +61,13 @@ def render_borders(root):
         return []
     d = root.dimensions
     bbox = root.border_box()
-    list = []
-    # Left border
-    list += [DisplayCommand(color, Rect(bbox.x, bbox.y, d.border.left, bbox.height))]
-    # Right border
-    list += [DisplayCommand(color, Rect(bbox.x + bbox.width - d.border.right, bbox.y, d.border.right, bbox.height))]
-    # Top border
-    list += [DisplayCommand(color, Rect(bbox.x, bbox.y, bbox.width, d.border.top))]
-    # Bottom border
-    list += [DisplayCommand(color, Rect(bbox.x, bbox.y + bbox.height - d.border.bottom, bbox.width, d.border.bottom))]
+    # Adding borders
+    list = [
+        DisplayCommand(color, Rect(bbox.x, bbox.y, d.border.left, bbox.height)),
+        DisplayCommand(color, Rect(bbox.x + bbox.width - d.border.right, bbox.y, d.border.right, bbox.height)),
+        DisplayCommand(color, Rect(bbox.x, bbox.y, bbox.width, d.border.top)),
+        DisplayCommand(color, Rect(bbox.x, bbox.y + bbox.height - d.border.bottom, bbox.width, d.border.bottom))
+    ]
     return list
 
 def get_color(root, name):
